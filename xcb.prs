@@ -2,23 +2,42 @@
 
 version 1 .
 
+; A Protocol specification is a collection of `modules` and shared `simple_types`.
+;
 ProtocolSpec = {
   "modules": @modules [Module ...],
   "simple_types": @simpleTypes [Type ...],
 }.
 
+; A Module describes the location of the input XML file from xcbproto, and contains a sequence
+; of `items`, each a Definition.
+;
 Module = {
   "xmlfilename": @xmlFilename string,
   "items": @items [Definition ...],
 }.
 
+; Each Definition is a pair of a Name and a Type.
+;
 Definition = {
   "definition": @name Name,
   "type": @type Type,
 }.
 
+; A Name is a sequence of simple labels. For example, you might see Names like
+;
+;  - `["xcb", "PIXMAP"]`
+;  - `["xcb", "Glx", "PIXMAP"]`
+;  - `["xcb", "Input", "InputInfo"]`
+;
+; and so on. Two-element names come from the `xproto` module; Three-element names, from other
+; modules. These names are computed by `xcbgen`.
+;
 Name = [string ...].
 
+; A Type is one of a large number of possible variants.
+; All variants share a BaseType.
+;
 Type = @base BaseType & @detail TypeExtensions .
 TypeExtensions =
 / @bitcase Bitcase
@@ -76,7 +95,14 @@ EnumField = @present { "enum": @value string } / @invalid { "enum": @invalid any
 
 FieldFlag = "visible" / "wire" / "auto" / "isfd" .
 
-Expr = any .
+Expr =
+/ @binop [@op string @lhs Expr @rhs Expr]
+/ @unop [@op string @arg Expr]
+/ @nilop [@op string]
+/ @id string
+/ @const int
+/ @bitfield { "bitfield": @expr Expr }
+.
 
 TypeRef = @typeRef Name / @type Type .
 

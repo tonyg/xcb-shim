@@ -15,6 +15,9 @@ do this. The program uses [`xcbgen`][xcbgen] to do all the complex stuff and emi
 structure containing more the information needed to compute data type definitions and
 (de)serialization code than you'd get from reading the XCB XML files alone.
 
+A [Preserves Schema](https://preserves.dev/preserves-schema.html) describing the output of
+`xcb-shim.py` is available in [`xcb.prs`](xcb.prs).
+
 ## Versioning
 
 The program and its output are versioned together in two parts: a [semver](https://semver.org/)

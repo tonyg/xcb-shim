@@ -24,4 +24,4 @@ for m in decoded.modules:
             pass
 
 # with open('x', 'w') as f:
-#     f.write(repr(decoded))
+#     f.write(repr(decoded).replace(',', '\n'))
