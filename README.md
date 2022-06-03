@@ -1,4 +1,4 @@
-# xcb-shim
+# xcb-shim: easier native X11 protocol implementation
 
 This program produces an intermediate form of the [XCB protocol specification][xcbproto] data
 structures, to make it easier to build native bindings rather than wrapping [`libxcb`][libxcb].
