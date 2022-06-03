@@ -1,0 +1,132 @@
+; This is a [Preserves Schema](https://preserves.dev/preserves-schema.html).
+
+version 1 .
+
+ProtocolSpec = {
+  "modules": @modules [Module ...],
+  "simple_types": @simpleTypes [Type ...],
+}.
+
+Module = {
+  "xmlfilename": @xmlFilename string,
+  "items": @items [Definition ...],
+}.
+
+Definition = {
+  "definition": @name Name,
+  "type": @type Type,
+}.
+
+Name = [string ...].
+
+Type = @base BaseType & @detail TypeExtensions .
+TypeExtensions =
+/ @bitcase Bitcase
+/ @case Case
+/ @enum { "class": "enum", "values": @values [EnumEntry ...], "bits": @bits [EnumEntry ...] }
+/ @error Error
+/ @event Event
+/ @eventstruct EventStruct
+/ @expr { "class": "expr", "expr": @expr Expr }
+/ @fd { "class": "fd" }
+/ @list { "class": "list", "member": @memberType TypeRef, "expr": @expr Expr }
+/ @pad { "class": "pad" }
+/ @request Request
+/ @simple { "class": "simple" }
+/ @struct Struct
+/ @switch Switch
+/ @union Union
+.
+
+Error = { "class": "error" } & @fields FieldsField & @lengthExpr LengthExprField & @opcodes OpcodesField .
+Event = { "class": "event" } & @fields FieldsField & @lengthExpr LengthExprField & @opcodes OpcodesField .
+EventStruct = { "class": "eventstruct" } & @fields FieldsField & @lengthExpr LengthExprField .
+Request = { "class": "request" } & @fields FieldsField & @lengthExpr LengthExprField & @opcode OpcodeField & @reply ReplyField .
+Struct = { "class": "struct" } & @fields FieldsField & @lengthExpr LengthExprField .
+Switch = @switch SwitchFields & @fields FieldsField & @lengthExpr LengthExprField .
+Union = { "class": "union" } & @fields FieldsField & @lengthExpr LengthExprField .
+Case = { "class": "case" } & @fields FieldsField & @lengthExpr LengthExprField .
+Bitcase = { "class": "bitcase" } & @fields FieldsField & @lengthExpr LengthExprField .
+
+SwitchFields = {
+  "class": "switch",
+  "switch_type": @switchType SwitchType,
+  "switch_expr": @switchExpr Expr,
+  "cases": @cases [Field ...],
+}.
+
+FieldsField = { "fields": @fields [Field ...] } .
+LengthExprField = @present { "length_expr": @value Expr } / @invalid { "length_expr": @invalid any } / @absent {} .
+OpcodeField = { "opcode": @opcode int } .
+OpcodesField = { "opcodes": @entries [OpcodeEntry ...] } .
+ReplyField = @present { "reply": @value Reply } / @invalid { "reply": @invalid any } / @absent {} .
+Reply = { "class": "reply" } & @base BaseType & @fields FieldsField & @lengthExpr LengthExprField .
+
+SwitchType = "multiple" / "single" .
+
+EnumEntry = [@name string @value int] .
+OpcodeEntry = [@name Name @value int] .
+
+Field = {
+  "flags": @flags [FieldFlag ...],
+  "type": @type TypeRef,
+} & @name FieldNameField & @enum EnumField .
+FieldNameField = @present { "name": @value string } / @invalid { "name": @invalid any } / @absent {} .
+EnumField = @present { "enum": @value string } / @invalid { "enum": @invalid any } / @absent {} .
+
+FieldFlag = "visible" / "wire" / "auto" / "isfd" .
+
+Expr = any .
+
+TypeRef = @typeRef Name / @type Type .
+
+BaseType =
+& { "class": @typeClass TypeClass }
+& @name NameField
+& @size SizeField
+& @doc DocField
+& @alignOffset AlignOffsetField
+& @fixedTotalSize FixedTotalSizeField
+& @nmemb NmembField
+.
+
+NameField = @present { "name": @value Name } / @invalid { "name": @invalid any } / @absent {} .
+SizeField = @present { "size": @value int } / @invalid { "size": @invalid any } / @absent {} .
+DocField = @present { "doc": @value Doc } / @invalid { "doc": @invalid any } / @absent {} .
+AlignOffsetField = @present { "align_offset": @value int } / @invalid { "align_offset": @invalid any } / @absent {} .
+FixedTotalSizeField = @present { "fixed_total_size": @value int } / @invalid { "fixed_total_size": @invalid any } / @absent {} .
+NmembField = @present { "nmemb": @value int } / @invalid { "nmemb": @invalid any } / @absent {} .
+
+TypeClass =
+/ "bitcase"
+/ "case"
+/ "enum"
+/ "error"
+/ "event"
+/ "eventstruct"
+/ "expr"
+/ "fd"
+/ "list"
+/ "pad"
+/ "reply"
+/ "request"
+/ "simple"
+/ "struct"
+/ "switch"
+/ "union"
+.
+
+Doc =
+& { "name": @name Name, "brief": @brief string }
+& @description DocDescription
+& @fields DocFields
+& @errors DocErrors
+& @see DocSee
+& @example DocExample
+.
+
+DocDescription = @present { "description": @value string } / @invalid { "description": @invalid any } / @absent {} .
+DocFields = @present { "fields": @value { string: string ...:...} } / @invalid { "fields": @invalid any } / @absent {} .
+DocErrors = @present { "errors": @value { string: string ...:...} } / @invalid { "errors": @invalid any } / @absent {} .
+DocSee = @present { "see": @value { string: string ...:...} } / @invalid { "see": @invalid any } / @absent {} .
+DocExample = @present { "example": @value string } / @invalid { "example": @invalid any } / @absent {} .
