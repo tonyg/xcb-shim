@@ -1,9 +1,9 @@
 all: xcbproto xcb.json
 
 xcbproto:
-	git submodule update --init --remote
+	git submodule update --init
 
-xcb.json: xcb-shim.py xcbproto/src/*.xml
+xcb.json: xcb-shim.py $(wildcard xcbproto/src/*.xml)
 	python3 xcb-shim.py > $@.tmp
 	mv $@.tmp $@
 
