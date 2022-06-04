@@ -1,6 +1,6 @@
-all: xcbproto xcb.json
+all: xcbproto/src xcb.json
 
-xcbproto:
+xcbproto/src:
 	git submodule update --init
 
 xcb.json: xcb-shim.py $(wildcard xcbproto/src/*.xml)
