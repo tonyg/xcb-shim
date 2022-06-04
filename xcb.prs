@@ -50,6 +50,7 @@ TypeExtensions =
 / @fd { "class": "fd" }
 / @list { "class": "list", "member": @memberType TypeRef, "expr": @expr Expr }
 / @pad { "class": "pad" }
+/ @reply Reply
 / @request Request
 / @simple { "class": "simple" }
 / @struct Struct
@@ -60,6 +61,7 @@ TypeExtensions =
 Error = { "class": "error" } & @fields FieldsField & @lengthExpr LengthExprField & @opcodes OpcodesField .
 Event = { "class": "event" } & @fields FieldsField & @lengthExpr LengthExprField & @opcodes OpcodesField .
 EventStruct = { "class": "eventstruct" } & @fields FieldsField & @lengthExpr LengthExprField .
+Reply = { "class": "reply" } & @fields FieldsField & @lengthExpr LengthExprField .
 Request = { "class": "request" } & @fields FieldsField & @lengthExpr LengthExprField & @opcode OpcodeField & @reply ReplyField .
 Struct = { "class": "struct" } & @fields FieldsField & @lengthExpr LengthExprField .
 Switch = @switch SwitchFields & @fields FieldsField & @lengthExpr LengthExprField .
@@ -78,8 +80,7 @@ FieldsField = { "fields": @fields [Field ...] } .
 LengthExprField = @present { "length_expr": @value Expr } / @invalid { "length_expr": @invalid any } / @absent {} .
 OpcodeField = { "opcode": @opcode int } .
 OpcodesField = { "opcodes": @entries [OpcodeEntry ...] } .
-ReplyField = @present { "reply": @value Reply } / @invalid { "reply": @invalid any } / @absent {} .
-Reply = { "class": "reply" } & @base BaseType & @fields FieldsField & @lengthExpr LengthExprField .
+ReplyField = @present { "reply": @value Type } / @invalid { "reply": @invalid any } / @absent {} .
 
 SwitchType = "multiple" / "single" .
 
