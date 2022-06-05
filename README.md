@@ -29,6 +29,28 @@ For example, version `1.2.3+1.15` means that `xcb-shim` (and the schema governin
 is at version 1.2.3 and the XML files and `xcbgen` library used to produce `xcb.json` were from
 `xcbproto` version 1.15.
 
+## Open questions
+
+**`union` types.** The method for deciding which union member is active is not specified, and
+varies from use to use. Fortunately, there are only a few unions in the current protocol suite.
+A future improvement could be to come up with some way to specify the connection between the
+discriminator and the union.
+
+Current uses:
+
+ - `randr:NotifyData`: member is selected by `subCode` member of the containing `Notify` event,
+   whose values are specified to be drawn from enum `Notify`.
+
+ - `xkb:Behavior`: member is selected by `type` field of each member, carefully positioned to
+   be in the same place in each, with an unspecified, implicit connection to an enum
+   `BehaviorType` which connects `CARD8` values to the active member of `xkb:Behavior`.
+
+ - `xkb:Action`: like `xkb:Behavior`, but the connection to the enum `SAType` is specified by
+   an `enum` attribute on the `type` fields in each member.
+
+ - `ClientMessageData`: member is selected by `format` field, able to take on values as
+   documented in the XML comments but not specified in the actual structures.
+
 ## Licence
 
 See [COPYING](./COPYING) for licencing information for all the files in this repository with
