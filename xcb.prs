@@ -56,8 +56,8 @@ SimpleType =
 ComplexType = @fields FieldsField & @lengthExpr LengthExprField & @detail SubComplexType .
 
 SubComplexType =
-/ @bitcase { "class": "bitcase" }
-/ @case { "class": "case" }
+/ @bitcase { "class": "bitcase", "matches": @matches [Expr ...]}
+/ @case { "class": "case", "matches": @matches [Expr ...] }
 / @error ErrorType
 / @event EventType
 / @eventstruct { "class": "eventstruct" }
@@ -93,6 +93,7 @@ EnumField = @present { "enum": @value string } / @invalid { "enum": @invalid any
 FieldFlag = "visible" / "wire" / "auto" / "isfd" .
 
 Expr =
+/ @enumref ["enumref" @type TypeRef @name string]
 / @binop [@op string @lhs Expr @rhs Expr]
 / @unop [@op string @arg Expr]
 / @nilop [@op string]

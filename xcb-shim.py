@@ -176,6 +176,12 @@ def digest(self):
         raise Exception(f'Unexpected size in switch type {self.name}')
     return d
 
+@extend(CaseOrBitcaseType)
+def digest(self):
+    return super(CaseOrBitcaseType, self).digest() | {
+        'matches': [e.digest() for e in self.expr],
+    }
+
 @extend(Request)
 def digest(self):
     d = super(Request, self).digest() | {
@@ -236,6 +242,9 @@ def digest(self):
         d = [self.op]
         if self.lhs: d.append(self.lhs.digest())
         if self.rhs: d.append(self.rhs.digest())
+        if self.op == 'enumref':
+            d.append(digest_type_or_typeref(self.lenfield_type))
+            d.append(self.lenfield_name)
     elif self.lenfield_name:
         d = self.lenfield_name
     elif self.nmemb:
