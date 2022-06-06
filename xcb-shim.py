@@ -167,10 +167,11 @@ def digest(self):
     if len(switch_types) != 1:
         raise Exception('Internal error: conflicting switch member types or absent switch members')
     switch_type = list(switch_types)[0]
+    all_field_names = set()
     d = super(SwitchType, self).digest() | {
         'switch_type': switch_type,
         'switch_expr': self.expr.digest(),
-        'cases': [b.digest() for b in self.bitcases],
+        'cases': [b.digest(all_field_names) for b in self.bitcases],
     }
     if d.pop('size', None) != 0:
         raise Exception(f'Unexpected size in switch type {self.name}')
@@ -207,11 +208,26 @@ def digest(self):
     }
 
 @extend(Field)
-def digest(self):
+def digest(self, all_field_names=None):
     d = {}
 
     if self.field_name is not None:
         d['name'] = self.field_name
+    elif self.type.is_case_or_bitcase:
+        # When there's no field name and the type is case or bitcase,
+        # xtypes.py synthesises a name (in SwitchType.resolve).
+        #
+        # Undo this here if we have some enumrefs we could use.
+        for candidate in self.type.expr:
+            if candidate.op == 'enumref':
+                if candidate.lenfield_name not in all_field_names:
+                    d['name'] = candidate.lenfield_name
+                    self.type.name = self.type.name[:-1] + (candidate.lenfield_name,)
+                    # ^ !!!
+                    break
+
+    if all_field_names is not None:
+        all_field_names.add(d.get('name', None))
 
     flags = []
     d['flags'] = flags
