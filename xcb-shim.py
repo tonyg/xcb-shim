@@ -48,16 +48,37 @@ def extend(cls):
         return f
     return extender
 
+def _base_shim_type_name(self):
+    if self.name is None:
+        return None
+    elif type(self.name) == str:
+        # work around xtypes.py bug, see https://github.com/tonyg/xcb-shim/issues/1
+        return [self.name]
+    else:
+        return self.name
+
+@extend(Type)
+def shim_type_name(self):
+    return _base_shim_type_name(self)
+
+@extend(SimpleType)
+def shim_type_name(self):
+    if self.xml_type is not None:
+        return [self.xml_type]
+    else:
+        return _base_shim_type_name(self)
+
+@extend(Enum)
+def shim_type_name(self):
+    return _base_shim_type_name(self)
+
 @extend(Type)
 def digest(self):
     d = {}
 
-    if self.name is not None:
-        if type(self.name) == str:
-            # work around xtypes.py bug, see https://github.com/tonyg/xcb-shim/issues/1
-            d['name'] = [self.name]
-        else:
-            d['name'] = self.name
+    n = self.shim_type_name()
+    if n is not None:
+        d['name'] = n
 
     d['class'] = class_name_map[self.__class__.__name__]
 
@@ -83,15 +104,15 @@ def digest(self):
     return d
 
 def digest_type_or_typeref(t, field_type = None):
-    if t.is_pad or t.is_expr or t.is_list or t.is_switch or t.is_fd or t.is_case_or_bitcase:
+    if t.is_pad or t.is_expr or t.is_list or t.is_switch or t.is_case_or_bitcase:
         # TODO: this hardcoded list ^ is pretty awful. We want a better way
         # to know whether using a typeref is the right thing to do
         return t.digest()
     elif t.is_simple:
         current_translator.simple_type_collector.push(t)
-        return list(field_type or t.name)
+        return list(field_type) if field_type else t.shim_type_name()
     else:
-        return list(field_type or t.name)
+        return list(field_type) if field_type else t.shim_type_name()
 
 @extend(Enum)
 def digest(self):
@@ -107,6 +128,7 @@ def digest(self):
         'member': digest_type_or_typeref(self.member),
         'expr': self.expr.digest(),
     }
+    d.pop('name', None)
     if self.nmemb is not None:
         d['nmemb'] = self.nmemb
     return d
@@ -180,17 +202,28 @@ def digest(self):
 
 @extend(Field)
 def digest(self):
+    d = {}
+
+    if self.field_name is not None:
+        d['name'] = self.field_name
+
     flags = []
+    d['flags'] = flags
     if self.visible: flags.append('visible')
     if self.wire: flags.append('wire')
     if self.auto: flags.append('auto')
-    if self.isfd: flags.append('isfd')
 
-    d = {}
-    if self.field_name is not None:
-        d['name'] = self.field_name
-    d['flags'] = flags
-    d['type'] = digest_type_or_typeref(self.type, self.field_type)
+    replace_type_with_fd = False
+    if self.isfd:
+        flags.append('isfd')
+        if self.type.is_fd: # sometimes it isn't: sometimes it's a *list* of fd!
+            replace_type_with_fd = True
+    if replace_type_with_fd:
+        d['type'] = ["fd"] # typeref, assuming some type named "fd" exists!
+        # ^ undoes the special-casing of fd fields in xtypes.py
+    else:
+        d['type'] = digest_type_or_typeref(self.type, self.field_type)
+
     if self.enum:
         d['enum'] = self.enum
 
@@ -236,8 +269,9 @@ class SimpleTypeCollector:
         self.seen_names = set()
 
     def push(self, type):
-        if type.name not in self.seen_names:
-            self.seen_names.add(type.name)
+        key = '.'.join(type.shim_type_name())
+        if key not in self.seen_names:
+            self.seen_names.add(key)
             self.types.append(type.digest())
 
 class Translator:
