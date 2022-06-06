@@ -36,45 +36,41 @@ Definition = {
 Name = [string ...].
 
 ; A Type is one of a large number of possible variants.
-; All variants share a BaseType.
 ;
-Type = @base BaseType & @detail TypeExtensions .
-TypeExtensions =
-/ @bitcase Bitcase
-/ @case Case
-/ @enum { "class": "enum", "values": @values [EnumEntry ...], "bits": @bits [EnumEntry ...] }
-/ @error Error
-/ @event Event
-/ @eventstruct EventStruct
+Type = @base BaseFields & @detail SubType .
+
+SubType =
+/ @simple SimpleType
 / @expr { "class": "expr", "expr": @expr Expr }
-/ @fd { "class": "fd" }
 / @list { "class": "list", "member": @memberType TypeRef, "expr": @expr Expr }
 / @pad { "class": "pad" }
-/ @reply Reply
-/ @request Request
-/ @simple { "class": "simple" }
-/ @struct Struct
-/ @switch Switch
-/ @union Union
+/ @complex ComplexType
 .
 
-Error = { "class": "error" } & @fields FieldsField & @lengthExpr LengthExprField & @opcodes OpcodesField .
-Event = { "class": "event" } & @fields FieldsField & @lengthExpr LengthExprField & @opcodes OpcodesField .
-EventStruct = { "class": "eventstruct" } & @fields FieldsField & @lengthExpr LengthExprField .
-Reply = { "class": "reply" } & @fields FieldsField & @lengthExpr LengthExprField .
-Request = { "class": "request" } & @fields FieldsField & @lengthExpr LengthExprField & @opcode OpcodeField & @reply ReplyField .
-Struct = { "class": "struct" } & @fields FieldsField & @lengthExpr LengthExprField .
-Switch = @switch SwitchFields & @fields FieldsField & @lengthExpr LengthExprField .
-Union = { "class": "union" } & @fields FieldsField & @lengthExpr LengthExprField .
-Case = { "class": "case" } & @fields FieldsField & @lengthExpr LengthExprField .
-Bitcase = { "class": "bitcase" } & @fields FieldsField & @lengthExpr LengthExprField .
+SimpleType =
+/ @plain { "class": "simple" }
+/ @enum { "class": "enum", "values": @values [EnumEntry ...], "bits": @bits [EnumEntry ...] }
+/ @fd { "class": "fd" }
+.
 
-SwitchFields = {
-  "class": "switch",
-  "switch_type": @switchType SwitchType,
-  "switch_expr": @switchExpr Expr,
-  "cases": @cases [Field ...],
-}.
+ComplexType = @fields FieldsField & @lengthExpr LengthExprField & @detail SubComplexType .
+
+SubComplexType =
+/ @bitcase { "class": "bitcase" }
+/ @case { "class": "case" }
+/ @error ErrorType
+/ @event EventType
+/ @eventstruct { "class": "eventstruct" }
+/ @reply { "class": "reply" }
+/ @request RequestType
+/ @struct { "class": "struct" }
+/ @switch { "class": "switch", "switch_type": @switchType SwitchType, "switch_expr": @switchExpr Expr, "cases": @cases [Field ...] }
+/ @union { "class": "union" }
+.
+
+ErrorType = { "class": "error" } & @opcodes OpcodesField .
+EventType = { "class": "event" } & @opcodes OpcodesField .
+RequestType = { "class": "request" } & @opcode OpcodeField & @reply ReplyField .
 
 FieldsField = { "fields": @fields [Field ...] } .
 LengthExprField = @present { "length_expr": @value Expr } / @invalid { "length_expr": @invalid any } / @absent {} .
@@ -107,7 +103,7 @@ Expr =
 
 TypeRef = @typeRef Name / @type Type .
 
-BaseType =
+BaseFields =
 & { "class": @typeClass TypeClass }
 & @name NameField
 & @size SizeField

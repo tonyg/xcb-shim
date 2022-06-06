@@ -14,14 +14,5 @@ decoded = s.xcb.ProtocolSpec.decode(j)
 
 print(stringify(decoded.__preserve__(), indent=2))
 
-for m in decoded.modules:
-    for i in m.items:
-        # if i.name.value[-1] == 'Connect':
-        #     print(i)
-        if i.type.detail.VARIANT.name == 'unknown':
-            # print(i.type)
-            sys.stderr.write(f'UNKNOWN {i.name}\n')
-            pass
-
 # with open('x', 'w') as f:
 #     f.write(repr(decoded).replace(',', '\n'))
