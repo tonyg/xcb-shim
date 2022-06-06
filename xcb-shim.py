@@ -53,7 +53,11 @@ def digest(self):
     d = {}
 
     if self.name is not None:
-        d['name'] = self.name
+        if type(self.name) == str:
+            # work around xtypes.py bug, see https://github.com/tonyg/xcb-shim/issues/1
+            d['name'] = [self.name]
+        else:
+            d['name'] = self.name
 
     d['class'] = class_name_map[self.__class__.__name__]
 
@@ -88,12 +92,6 @@ def digest_type_or_typeref(t, field_type = None):
         return list(field_type or t.name)
     else:
         return list(field_type or t.name)
-
-# @extend(FileDescriptor)
-# def digest(self):
-#     return super(FileDescriptor, self).digest() | {
-#         'is_fd': True,
-#     }
 
 @extend(Enum)
 def digest(self):
