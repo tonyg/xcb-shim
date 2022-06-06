@@ -104,7 +104,6 @@ Expr =
 TypeRef = @typeRef Name / @type Type .
 
 BaseFields =
-& { "class": @typeClass TypeClass }
 & @name NameField
 & @size SizeField
 & @doc DocField
@@ -119,25 +118,6 @@ DocField = @present { "doc": @value Doc } / @invalid { "doc": @invalid any } / @
 AlignOffsetField = @present { "align_offset": @value int } / @invalid { "align_offset": @invalid any } / @absent {} .
 FixedTotalSizeField = @present { "fixed_total_size": @value int } / @invalid { "fixed_total_size": @invalid any } / @absent {} .
 NmembField = @present { "nmemb": @value int } / @invalid { "nmemb": @invalid any } / @absent {} .
-
-TypeClass =
-/ "bitcase"
-/ "case"
-/ "enum"
-/ "error"
-/ "event"
-/ "eventstruct"
-/ "expr"
-/ "fd"
-/ "list"
-/ "pad"
-/ "reply"
-/ "request"
-/ "simple"
-/ "struct"
-/ "switch"
-/ "union"
-.
 
 Doc =
 & { "name": @name Name, "brief": @brief string }
