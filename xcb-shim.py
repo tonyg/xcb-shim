@@ -145,7 +145,7 @@ def digest(self):
 @extend(PadType)
 def digest(self):
     d = super(PadType, self).digest()
-    d.pop('nmemb', None)
+    d['align'] = self.align
     return d
 
 @extend(ComplexType)

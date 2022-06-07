@@ -57,7 +57,7 @@ SubType =
 / @simple SimpleType
 / @expr { "class": "expr", "expr": @expr Expr }
 / @list { "class": "list", "member": @memberType TypeRef, "expr": @expr Expr }
-/ @pad { "class": "pad" }
+/ @pad { "class": "pad", "align": @align int }
 / @complex ComplexType
 .
 
