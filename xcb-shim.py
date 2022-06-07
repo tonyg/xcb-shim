@@ -320,11 +320,22 @@ class Translator:
             self.m.register()
             self.m.resolve()
             self.m.generate()
+            self.collect_extension_info()
         finally:
             current_translator = old_translator
 
     def handlers(self):
         return {}
+
+    def collect_extension_info(self):
+        ns = self.m.namespace
+        if ns.is_ext:
+            self.output['major_version'] = int(ns.major_version)
+            self.output['minor_version'] = int(ns.minor_version)
+            self.output['ext_xname'] = ns.ext_xname
+            self.output['ext_name'] = ns.ext_name
+        else:
+            self.output['core'] = True
 
     def open(self, module):
         pass

@@ -10,12 +10,26 @@ ProtocolSpec = {
 }.
 
 ; A Module describes the location of the input XML file from xcbproto, and contains a sequence
-; of `items`, each a Definition.
+; of `items`, each a Definition. If the module is an extension, it will also have an
+; `extension`.
 ;
 Module = {
   "xmlfilename": @xmlFilename string,
   "items": @items [Definition ...],
-}.
+} & @extension Extension .
+
+Extension =
+/ @extension {
+  "major_version": @majorVersion int,
+  "minor_version": @minorVersion int,
+  "ext_xname": @xName string,
+  "ext_name": @name string,
+}
+/ @core {
+  ; NB. the Preserves symbol `true` appears when reading JSON input as a Preserves document!
+  "core": =true,
+}
+.
 
 ; Each Definition is a pair of a Name and a Type.
 ;

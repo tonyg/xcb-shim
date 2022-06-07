@@ -1,14 +1,13 @@
 #!/usr/bin/env python3
 
 import sys
-import json
 from pprint import pprint
 from preserves.schema import load_schema_file
-from preserves import stringify
+from preserves import stringify, parse
 
 s = load_schema_file('xcb.prb')
 with open('xcb.json') as f:
-    j = json.load(f)
+    j = parse(f.read())
 
 decoded = s.xcb.ProtocolSpec.decode(j)
 
