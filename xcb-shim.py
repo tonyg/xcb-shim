@@ -202,6 +202,7 @@ def digest_opcodes(opcodes):
 def digest(self):
     return super(Event, self).digest() | {
         'opcodes': digest_opcodes(self.opcodes),
+        'is_generic_event': self.is_ge_event,
     }
 
 @extend(Error)

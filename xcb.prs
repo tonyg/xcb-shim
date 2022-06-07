@@ -83,7 +83,10 @@ SubComplexType =
 .
 
 ErrorType = { "class": "error" } & @opcodes OpcodesField .
-EventType = { "class": "event" } & @opcodes OpcodesField .
+EventType = {
+  "class": "event",
+  "is_generic_event": @isGenericEvent JsonBool,
+} & @opcodes OpcodesField .
 RequestType = { "class": "request" } & @opcode OpcodeField & @reply ReplyField .
 
 FieldsField = { "fields": @fields [Field ...] } .
@@ -148,3 +151,5 @@ DocFields = @present { "fields": @value { string: string ...:...} } / @invalid {
 DocErrors = @present { "errors": @value { string: string ...:...} } / @invalid { "errors": @invalid any } / @absent {} .
 DocSee = @present { "see": @value { string: string ...:...} } / @invalid { "see": @invalid any } / @absent {} .
 DocExample = @present { "example": @value string } / @invalid { "example": @invalid any } / @absent {} .
+
+JsonBool = =false / =true .
