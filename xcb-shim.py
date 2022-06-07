@@ -108,11 +108,14 @@ def digest_type_or_typeref(t, field_type = None):
         # TODO: this hardcoded list ^ is pretty awful. We want a better way
         # to know whether using a typeref is the right thing to do
         return t.digest()
-    elif t.is_simple:
+
+    if t.is_simple:
         current_translator.simple_type_collector.push(t)
-        return list(field_type) if field_type else t.shim_type_name()
+
+    if field_type is not None and field_type[0] == 'xcb': # catch xcb.WINDOW etc, don't catch CARD32 etc
+        return list(field_type)
     else:
-        return list(field_type) if field_type else t.shim_type_name()
+        return t.shim_type_name()
 
 @extend(Enum)
 def digest(self):
