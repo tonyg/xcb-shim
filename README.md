@@ -51,6 +51,11 @@ Current uses:
  - `ClientMessageData`: member is selected by `format` field, able to take on values as
    documented in the XML comments but not specified in the actual structures.
 
+**`mask` attribute on `field` XML elements.** The `xcbgen` code doesn't yet propagate this
+information to the resulting `Field` objects. This makes bitmask values appear as simple
+integers. Perhaps `xcbgen` could be enhanced to capture this information. Similarly, `xcbgen`
+doesn't propagate `altenum` or `altmask`.
+
 ## Licence
 
 See [COPYING](./COPYING) for licencing information for all the files in this repository with
