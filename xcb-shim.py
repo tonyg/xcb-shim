@@ -257,7 +257,16 @@ def digest(self, all_field_names=None):
 
 @extend(Expression)
 def digest(self):
+    if self.op == 'sumof':
+        d = { 'sumof': self.lenfield_name }
+        if self.lenfield_type is not None:
+            d['element_type'] = list(self.lenfield_type)
+        if self.rhs:
+            d['element_expr'] = self.rhs.digest()
+        return d
+
     d = None
+
     if self.op:
         d = [self.op]
         if self.lhs: d.append(self.lhs.digest())

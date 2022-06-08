@@ -111,13 +111,22 @@ FieldFlag = "visible" / "wire" / "auto" / "isfd" .
 
 Expr =
 / @enumref ["enumref" @type TypeRef @name string]
-/ @binop [@op string @lhs Expr @rhs Expr]
-/ @unop [@op string @arg Expr]
-/ @nilop [@op string]
+/ @binop [@op BinaryOperator @lhs Expr @rhs Expr]
+/ @unop [@op UnaryOperator @arg Expr]
+/ @nilop [@op NullaryOperator]
 / @id string
 / @const int
 / @bitfield { "bitfield": @expr Expr }
+/ @sumof SumofExpr
 .
+
+BinaryOperator = @mul "*" / @div "/" / @bitwiseAnd "&" / @add "+" / @sub "-" .
+UnaryOperator = @bitwiseNot "~" / @popcount "popcount" .
+NullaryOperator = "calculate_len" / @listElementRef "listelement-ref" .
+
+SumofExpr = { "sumof": @listName string } & @elementType ElementTypeField & @elementExpr ElementExprField .
+ElementTypeField = @present { "element_type": @value TypeRef } / @invalid { "element_type": @invalid any } / @absent {} .
+ElementExprField = @present { "element_expr": @value Expr } / @invalid { "element_expr": @invalid any } / @absent {} .
 
 TypeRef = @typeRef Name / @type Type .
 
