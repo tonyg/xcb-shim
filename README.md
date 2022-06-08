@@ -56,6 +56,11 @@ information to the resulting `Field` objects. This makes bitmask values appear a
 integers. Perhaps `xcbgen` could be enhanced to capture this information. Similarly, `xcbgen`
 doesn't propagate `altenum` or `altmask`.
 
+**`string_len` in `QueryTextExtents`.** The `odd_length` field refers to `string_len`, but that
+is not explicitly defined. The `xcbgen` code autogenerates *listname*`_len` if it's not
+present; there's a *strong* convention that *listname*`_len` be used to describe the length of
+a list!
+
 ## Licence
 
 See [COPYING](./COPYING) for licencing information for all the files in this repository with
