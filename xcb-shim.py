@@ -251,7 +251,10 @@ def digest(self, all_field_names=None):
         d['type'] = digest_type_or_typeref(self.type, self.field_type)
 
     if self.enum:
-        d['enum'] = self.enum
+        # To resolve the enum name to something sensible, we need access to the
+        # xcbgen.state.Module the field occurs in. xcbgen doesn't store this at present, so we
+        # cheat (!) and use our icky global.
+        d['enum'] = current_translator.m.get_type_name(self.enum)
 
     return d
 

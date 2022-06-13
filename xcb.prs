@@ -105,7 +105,7 @@ Field = {
   "type": @type TypeRef,
 } & @name FieldNameField & @enum EnumField .
 FieldNameField = @present { "name": @value string } / @invalid { "name": @invalid any } / @absent {} .
-EnumField = @present { "enum": @value string } / @invalid { "enum": @invalid any } / @absent {} .
+EnumField = @present { "enum": @value Name } / @invalid { "enum": @invalid any } / @absent {} .
 
 FieldFlag = "visible" / "wire" / "auto" / "isfd" .
 
