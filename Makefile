@@ -12,9 +12,13 @@ check-schema-prereqs: xcb.prb xcb.json check-schema.py
 check-schema: check-schema-prereqs
 	./check-schema.py
 
-compare-schematized: check-schema-prereqs
+1.json: xcb.json
 	preserves-tool convert < xcb.json > 1.json
+
+2.json: check-schema-prereqs
 	./check-schema.py | preserves-tool convert > 2.json
+
+compare-schematized: check-schema-prereqs 1.json 2.json
 	colordiff -u 1.json 2.json
 
 xcb.prb: xcb.prs
