@@ -63,7 +63,12 @@ SubType =
 
 SimpleType =
 / @plain { "class": "simple" }
-/ @enum { "class": "enum", "values": @values [EnumEntry ...], "bits": @bits [EnumEntry ...] }
+/ @enum {
+  "class": "enum",
+  "values": @values [EnumEntry ...],
+  "bits": @bits [EnumEntry ...],
+  "wiretypes": @wiretypes [Name ...],
+}
 / @fd { "class": "fd" }
 .
 

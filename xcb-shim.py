@@ -19,6 +19,9 @@ for name in ['open', 'close', 'simple', 'enum', 'struct',
         return lambda *args, **kwargs: getattr(current_translator, name)(*args, **kwargs)
     output[name] = delegator(name)
 
+all_items = {}
+item_hooks = {}
+
 from xcbgen.state import Module
 from xcbgen.xtypes import *
 
@@ -120,10 +123,18 @@ def digest_type_or_typeref(t, field_type = None):
 @extend(Enum)
 def digest(self):
     def e(es): return [(k, int(v)) for (k, v) in es]
-    return super(Enum, self).digest() | {
-        'values': e(self.values),
-        'bits': e(self.bits),
-    }
+    d = super(Enum, self).digest()
+    d['values'] = e(self.values)
+    d['bits'] = e(self.bits)
+    d['wiretypes'] = [] # filled in by hooks
+    #
+    # The sizes in xtypes' Enum instances are to do with (C-language) in-memory *storage* of
+    # the enum, not on-the-wire *transmission* of the enum, and as such aren't relevant
+    # generally.
+    #
+    d.pop('fixed_total_size', None)
+    d.pop('size', None)
+    return d
 
 @extend(ListType)
 def digest(self):
@@ -254,7 +265,15 @@ def digest(self, all_field_names=None):
         # To resolve the enum name to something sensible, we need access to the
         # xcbgen.state.Module the field occurs in. xcbgen doesn't store this at present, so we
         # cheat (!) and use our icky global.
-        d['enum'] = current_translator.m.get_type_name(self.enum)
+        enum_name = current_translator.m.get_type_name(self.enum)
+        d['enum'] = enum_name
+        wiretype = d['type']
+        def record_enum_wiretype(digest):
+            if digest['class'] == 'enum':
+                wiretypes = digest['wiretypes']
+                if wiretype not in wiretypes:
+                    wiretypes.append(wiretype)
+        current_translator.add_item_hook(enum_name, record_enum_wiretype)
 
     return d
 
@@ -324,7 +343,9 @@ class Translator:
             'xmlfilename': self.xmlfilename,
             'items': self.items,
         }
+        self.translate()
 
+    def translate(self):
         global current_translator
         old_translator = current_translator
         try:
@@ -357,7 +378,21 @@ class Translator:
         pass
 
     def push_item(self, name, t):
-        self.items.append({ 'definition': name, 'type': t.digest() })
+        digest = t.digest()
+        self.items.append({ 'definition': name, 'type': digest })
+
+        if name not in all_items:
+            all_items[name] = []
+        all_items[name].append(digest)
+        for hook in item_hooks.get(name, []):
+            hook(digest)
+
+    def add_item_hook(self, name, hook):
+        if name not in item_hooks:
+            item_hooks[name] = []
+        item_hooks[name].append(hook)
+        for digest in all_items.get(name, []):
+            hook(digest)
 
     def request(self, t, name):
         self.push_item(name, t)
