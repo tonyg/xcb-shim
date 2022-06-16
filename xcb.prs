@@ -83,7 +83,13 @@ SubComplexType =
 / @reply { "class": "reply" }
 / @request RequestType
 / @struct { "class": "struct" }
-/ @switch { "class": "switch", "switch_type": @switchType SwitchType, "switch_expr": @switchExpr Expr, "cases": @cases [Field ...] }
+/ @switch {
+  "class": "switch",
+  "switch_type": @switchType SwitchType,
+  "switch_discriminator": @switchDiscriminator string,
+  "switch_expr": @switchExpr Expr,
+  "cases": @cases [Field ...],
+}
 / @union { "class": "union" }
 .
 

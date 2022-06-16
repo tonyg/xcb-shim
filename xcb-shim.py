@@ -182,13 +182,26 @@ def digest(self):
         raise Exception('Internal error: conflicting switch member types or absent switch members')
     switch_type = list(switch_types)[0]
     all_field_names = set()
+    switch_expr = self.expr.digest()
+
+    if type(switch_expr) == str:
+        switch_discriminator = switch_expr
+    elif self.name == ('xcb', 'xkb', 'SelectEvents', 'details'):
+        # Special case!! :-/
+        switch_discriminator = 'affectWhich'
+    else:
+        raise Exception(f'Cannot determine correct switch_discriminator for {self}')
+
     d = super(SwitchType, self).digest() | {
         'switch_type': switch_type,
-        'switch_expr': self.expr.digest(),
+        'switch_discriminator': switch_discriminator,
+        'switch_expr': switch_expr,
         'cases': [b.digest(all_field_names) for b in self.bitcases],
     }
+
     if d.pop('size', None) != 0:
         raise Exception(f'Unexpected size in switch type {self.name}')
+
     return d
 
 @extend(CaseOrBitcaseType)
