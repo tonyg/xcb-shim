@@ -1,6 +1,6 @@
 [submodule "xcbproto"]
 	path = xcbproto
 	url = https://gitlab.freedesktop.org/xorg/proto/xcbproto
-[submodule "xproto"]
-	path = xproto
-	url = https://gitlab.freedesktop.org/xorg/proto/xproto
+[submodule "xorgproto"]
+	path = xorgproto
+	url = https://gitlab.freedesktop.org/xorg/proto/xorgproto
