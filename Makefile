@@ -1,6 +1,9 @@
-all: xcbproto/src xcb.json
+all: xcbproto/src xorgproto/include/X11/keysymdef.h xcb.json
 
 xcbproto/src:
+	git submodule update --init
+
+xorgproto/include/X11/keysymdef.h:
 	git submodule update --init
 
 xcb.json: xcb-shim.py $(wildcard xcbproto/src/*.xml)

@@ -13,7 +13,9 @@ programming languages is a big obstacle to writing X11 bindings using the XCB sp
 Therefore, I wrote [`xcb-shim.py`](xcb-shim.py) to reduce the burden on programmers trying to
 do this. The program uses [`xcbgen`][xcbgen] to do all the complex stuff and emits a JSON
 structure containing more of the information needed to compute data type definitions and
-(de)serialization code than you'd get from reading the XCB XML files alone.
+(de)serialization code than you'd get from reading the XCB XML files alone. For convenience, it
+also pulls in `keysym` definitions from
+[`keysymdef.h](https://gitlab.freedesktop.org/xorg/proto/xorgproto/-/blob/master/include/X11/keysym.h).
 
 A [Preserves Schema](https://preserves.dev/preserves-schema.html) describing the output of
 `xcb-shim.py` is available in [`xcb.prs`](xcb.prs).

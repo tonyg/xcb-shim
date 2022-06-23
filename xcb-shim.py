@@ -2,6 +2,7 @@
 
 import sys
 import os
+import re
 
 xcbproto_dir = sys.argv[1] if len(sys.argv) > 1 else 'xcbproto'
 sys.path.append(xcbproto_dir)
@@ -431,6 +432,43 @@ class Translator:
     def eventstruct(self, t, name):
         self.push_item(name, t)
 
+def gather_keysyms():
+    re1 = re.compile(r'^\#define XK_([a-zA-Z_0-9]+)\s+0x([0-9a-f]+)\s*\/\* U\+([0-9A-F]{4,6}) (.*) \*\/\s*$')
+    re2 = re.compile(r'^\#define XK_([a-zA-Z_0-9]+)\s+0x([0-9a-f]+)\s*\/\*\(U\+([0-9A-F]{4,6}) (.*)\)\*\/\s*$')
+    re3 = re.compile(r'^\#define XK_([a-zA-Z_0-9]+)\s+0x([0-9a-f]+)\s*(\/\*\s*(.*)\s*\*\/)?\s*$')
+    keysyms = []
+    with open('xorgproto/include/X11/keysymdef.h') as f:
+        for line in f:
+            line = line.rstrip()
+            m = re1.match(line)
+            if m:
+                keysyms.append({
+                    'name': m[1],
+                    'number': int(m[2], 16),
+                    'unicode': int(m[3], 16),
+                    'unicode_name': m[4].strip(),
+                })
+                continue
+            m = re2.match(line)
+            if m:
+                keysyms.append({
+                    'name': m[1],
+                    'number': int(m[2], 16),
+                    'unicode': int(m[3], 16),
+                    'unicode_name': m[4].strip(),
+                    'unicode_approximate': True,
+                })
+                continue
+            m = re3.match(line)
+            if m:
+                keysyms.append({
+                    'name': m[1],
+                    'number': int(m[2], 16),
+                    'comment': (m[4] or '').strip(),
+                })
+                continue
+    return keysyms
+
 if __name__ == '__main__':
     import glob
 
@@ -440,6 +478,7 @@ if __name__ == '__main__':
     output = {
         'modules': modules,
         'simple_types': simple_type_collector.types,
+        'keysyms': gather_keysyms(),
     }
 
     import json

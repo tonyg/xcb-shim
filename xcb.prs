@@ -7,6 +7,7 @@ version 1 .
 ProtocolSpec = {
   "modules": @modules [Module ...],
   "simple_types": @simpleTypes [Type ...],
+  "keysyms": @keysyms [Keysym ...],
 }.
 
 ; A Module describes the location of the input XML file from xcbproto, and contains a sequence
@@ -173,3 +174,13 @@ DocSee = @present { "see": @value { string: string ...:...} } / @invalid { "see"
 DocExample = @present { "example": @value string } / @invalid { "example": @invalid any } / @absent {} .
 
 JsonBool = =false / =true .
+
+Keysym =
+& { "name": @name string, "number": @number int }
+& @command KeysymComment
+& @unicode UnicodeKeysym
+& @approximate UnicodeApproximate
+.
+KeysymComment = @present { "comment": @text string } / @invalid { "comment": @invalid any } / @absent {} .
+UnicodeKeysym = @unicode { "unicode": @codepoint int, "unicode_name": @name string } / @nonUnicode {} .
+UnicodeApproximate = @approximate { "unicode_approximate": #t } / @invalid { "unicode_approximate": @invalid any } / @exact {} .
