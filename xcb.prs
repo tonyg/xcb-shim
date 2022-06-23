@@ -177,7 +177,7 @@ JsonBool = =false / =true .
 
 Keysym =
 & { "name": @name string, "number": @number int }
-& @command KeysymComment
+& @comment KeysymComment
 & @unicode UnicodeKeysym
 & @approximate UnicodeApproximate
 .
