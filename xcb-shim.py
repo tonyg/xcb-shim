@@ -461,11 +461,14 @@ def gather_keysyms():
                 continue
             m = re3.match(line)
             if m:
-                keysyms.append({
+                k = {
                     'name': m[1],
                     'number': int(m[2], 16),
-                    'comment': (m[4] or '').strip(),
-                })
+                }
+                comment = (m[4] or '').strip()
+                if comment:
+                    k['comment'] = comment
+                keysyms.append(k)
                 continue
     return keysyms
 
