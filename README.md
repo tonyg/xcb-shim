@@ -12,7 +12,7 @@ Reimplementing this complex (and not documented outside of the python code?) log
 programming languages is a big obstacle to writing X11 bindings using the XCB specifications.
 Therefore, I wrote [`xcb-shim.py`](xcb-shim.py) to reduce the burden on programmers trying to
 do this. The program uses [`xcbgen`][xcbgen] to do all the complex stuff and emits a JSON
-structure containing more the information needed to compute data type definitions and
+structure containing more of the information needed to compute data type definitions and
 (de)serialization code than you'd get from reading the XCB XML files alone.
 
 A [Preserves Schema](https://preserves.dev/preserves-schema.html) describing the output of
