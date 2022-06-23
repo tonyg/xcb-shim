@@ -61,6 +61,13 @@ is not explicitly defined. The `xcbgen` code autogenerates *listname*`_len` if i
 present; there's a *strong* convention that *listname*`_len` be used to describe the length of
 a list!
 
+**Use of implicit `length` in replies.** In some definitions (e.g. `keysyms_per_keycode` in
+`GetKeyboardMapping` reply, `data` in `GetImage` reply, and many others in various extensions),
+a list's length expression references a `length` field that is not part of the explicit list of
+fields in the definition. It is a field automatically added to replies by `xcbgen` with flags
+{`wire`, `auto`}, but not `visible`, so while it's not part of the interface to the structure,
+it *is* supposed to be present for the internal serialization code.
+
 ## Licence
 
 See [COPYING](./COPYING) for licencing information for all the files in this repository with
