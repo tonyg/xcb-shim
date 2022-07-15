@@ -70,6 +70,13 @@ fields in the definition. It is a field automatically added to replies by `xcbge
 {`wire`, `auto`}, but not `visible`, so while it's not part of the interface to the structure,
 it *is* supposed to be present for the internal serialization code.
 
+### Other implementations generating code from `xcbproto` XML files
+
+I'm aware of `libxcb`, plus a Go binding, [`xgb`](https://github.com/jezek/xgb) (previously
+[here](https://github.com/BurntSushi/xgb)), but I don't know of any others. There must be some!
+Please let [me](mailto:tonyg@leastfixedpoint.com?subject=Uses of xcbproto) know if you know of
+any!
+
 ## Licence
 
 See [COPYING](./COPYING) for licencing information for all the files in this repository with
