@@ -74,8 +74,8 @@ it *is* supposed to be present for the internal serialization code.
 
 I'm aware of `libxcb`, plus a Go binding, [`xgb`](https://github.com/jezek/xgb) (previously
 [here](https://github.com/BurntSushi/xgb)), but I don't know of any others. There must be some!
-Please let [me](mailto:tonyg@leastfixedpoint.com?subject=Uses of xcbproto) know if you know of
-any!
+Please let <a href="mailto:tonyg@leastfixedpoint.com?subject=Uses of xcbproto">me</a> know if
+you know of any!
 
 ## Licence
 
